@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/table/:table",
+      "destination": "/index.html"
+    }
+  ]
+}
