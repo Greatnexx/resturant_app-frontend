@@ -1,5 +1,13 @@
-import React, { useState } from "react";
-import { ShoppingCart, Plus, Minus, Star, Clock, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  ShoppingCart,
+  Plus,
+  Minus,
+  Star,
+  Clock,
+  Check,
+  MapPin,
+} from "lucide-react";
 
 interface MenuItem {
   id: number;
@@ -26,9 +34,22 @@ type ViewType = "menu" | "cart" | "success";
 const Menu: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentView, setCurrentView] = useState<ViewType>("menu");
-  const [_orderPlaced, setOrderPlaced] = useState<boolean>(false);
+  const [orderPlaced, setOrderPlaced] = useState<boolean>(false);
   const [orderNumber] = useState<number>(Math.floor(Math.random() * 1000) + 1);
   const [restaurantName] = useState<string>("Bella Vista");
+  const [tableNumber, setTableNumber] = useState<number | null>(null);
+
+  // Extract table number from URL path
+  useEffect(() => {
+    const path = window.location.pathname;
+    const tableMatch = path.match(/\/table\/(\d+)/);
+    if (tableMatch) {
+      setTableNumber(parseInt(tableMatch[1]));
+    } else {
+      // For demo purposes, if no table in URL, default to table 1
+      setTableNumber(1);
+    }
+  }, []);
 
   // Mock menu data
   const menuItems: MenuItems = {
@@ -174,8 +195,10 @@ const Menu: React.FC = () => {
     // In real app, this would send to backend
     console.log("Order placed:", {
       orderNumber,
+      tableNumber,
       items: cart,
       total: getTotalPrice(),
+      timestamp: new Date().toISOString(),
     });
   };
 
@@ -240,8 +263,14 @@ const Menu: React.FC = () => {
           </button>
           <h1 className="text-2xl font-bold">Your Order</h1>
         </div>
-        <div className="text-amber-400 text-sm">
-          Order #{orderNumber} • {restaurantName}
+        <div className="flex items-center justify-between text-sm">
+          <div className="text-amber-400">
+            Order #{orderNumber} • {restaurantName}
+          </div>
+          <div className="flex items-center gap-1 text-amber-400">
+            <MapPin className="w-4 h-4" />
+            Table {tableNumber}
+          </div>
         </div>
       </div>
 
@@ -329,6 +358,10 @@ const Menu: React.FC = () => {
               <span className="font-medium">{orderNumber}</span>
             </div>
             <div className="flex justify-between">
+              <span>Table:</span>
+              <span className="font-medium">{tableNumber}</span>
+            </div>
+            <div className="flex justify-between">
               <span>Items:</span>
               <span className="font-medium">{getTotalItems()}</span>
             </div>
@@ -348,9 +381,16 @@ const Menu: React.FC = () => {
           </div>
 
           <p className="text-gray-600">
-            Your order has been sent to the kitchen. We'll notify you when it's
-            ready!
+            Your order has been sent to the kitchen. We'll bring it to your
+            table when ready!
           </p>
+
+          <div className="bg-amber-50 p-3 rounded-lg">
+            <div className="flex items-center justify-center gap-2 text-amber-800">
+              <MapPin className="w-4 h-4" />
+              <span className="font-medium">Table {tableNumber}</span>
+            </div>
+          </div>
 
           <button
             onClick={() => {
@@ -377,8 +417,9 @@ const Menu: React.FC = () => {
           </div>
           <div className="text-right">
             <div className="text-amber-400 text-sm">Order #{orderNumber}</div>
-            <div className="flex items-center gap-1 text-xs text-gray-400">
-              <span>🍽️ Scan QR to order</span>
+            <div className="flex items-center gap-1 text-xs text-amber-400">
+              <MapPin className="w-3 h-3" />
+              <span>Table {tableNumber}</span>
             </div>
           </div>
         </div>
