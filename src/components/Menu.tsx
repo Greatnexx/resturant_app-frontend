@@ -34,21 +34,50 @@ type ViewType = "menu" | "cart" | "success";
 const Menu: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentView, setCurrentView] = useState<ViewType>("menu");
-  const [_orderPlaced, setOrderPlaced] = useState<boolean>(false);
+
   const [orderNumber] = useState<number>(Math.floor(Math.random() * 1000) + 1);
   const [restaurantName] = useState<string>("Bella Vista");
   const [tableNumber, setTableNumber] = useState<number | null>(null);
 
   // Extract table number from URL path
   useEffect(() => {
-    const path = window.location.pathname;
-    const tableMatch = path.match(/\/table\/(\d+)/);
-    if (tableMatch) {
-      setTableNumber(parseInt(tableMatch[1]));
-    } else {
-      // For demo purposes, if no table in URL, default to table 1
-      setTableNumber(1);
-    }
+    const extractTableNumber = () => {
+      try {
+        const pathname = window.location.pathname;
+        const currentUrl = window.location.href;
+
+        console.log("=== QR CODE SCAN DEBUG ===");
+        console.log("Full URL:", currentUrl);
+        console.log("Pathname:", pathname);
+
+        // Extract table number from pathname like /table/5
+        const pathMatch = pathname.match(/\/table\/(\d+)/);
+
+        if (pathMatch && pathMatch[1]) {
+          const tableNum = parseInt(pathMatch[1]);
+          console.log(
+            "✅ SUCCESS: Extracted table number from QR code:",
+            tableNum
+          );
+          setTableNumber(tableNum);
+
+          // Show success message
+          console.log(`🎯 Customer scanned QR code for TABLE ${tableNum}`);
+        } else {
+          console.log("❌ No table number found in URL");
+          console.log("Expected format: /table/[number]");
+          console.log("Setting default table to 1");
+          setTableNumber(1);
+        }
+
+        console.log("=== END DEBUG ===");
+      } catch (error) {
+        console.error("Error extracting table number:", error);
+        setTableNumber(1);
+      }
+    };
+
+    extractTableNumber();
   }, []);
 
   // Mock menu data
@@ -190,7 +219,6 @@ const Menu: React.FC = () => {
   };
 
   const placeOrder = (): void => {
-    setOrderPlaced(true);
     setCurrentView("success");
     // In real app, this would send to backend
     console.log("Order placed:", {
@@ -396,7 +424,6 @@ const Menu: React.FC = () => {
             onClick={() => {
               setCurrentView("menu");
               setCart([]);
-              setOrderPlaced(false);
             }}
             className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 rounded-lg transition-colors duration-200"
           >
@@ -408,7 +435,7 @@ const Menu: React.FC = () => {
   );
 
   const MenuView: React.FC = () => (
-    <div className="max-w-md mx-auto bg-gray-50 ">
+    <div className="max-w-md mx-auto bg-gray-50 min-h-screen">
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -421,6 +448,19 @@ const Menu: React.FC = () => {
               <MapPin className="w-3 h-3" />
               <span>Table {tableNumber}</span>
             </div>
+          </div>
+        </div>
+
+        {/* QR Code Status - remove in production */}
+        <div className="text-xs text-green-400 mt-2 bg-green-900/20 p-2 rounded">
+          <div className="font-semibold">QR Code Status:</div>
+          <div>📱 URL: {window.location.href}</div>
+          <div>🍽️ Table: {tableNumber}</div>
+          <div>
+            ✅{" "}
+            {tableNumber !== 1
+              ? `Scanned from Table ${tableNumber}`
+              : "Using default table"}
           </div>
         </div>
       </div>
@@ -447,7 +487,7 @@ const Menu: React.FC = () => {
   );
 
   return (
-    <div className="font-Poppins">
+    <div className="font-sans">
       {currentView === "menu" && <MenuView />}
       {currentView === "cart" && <CartView />}
       {currentView === "success" && <SuccessView />}
