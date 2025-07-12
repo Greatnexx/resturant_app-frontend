@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  ShoppingCart,
-  Plus,
-  Minus,
-  Star,
-  Clock,
-  Check,
-  MapPin,
-} from "lucide-react";
+import { ShoppingCart, Plus, Minus, Star, Clock, Check, MapPin } from "lucide-react";
 
 interface MenuItem {
   id: number;
@@ -45,22 +37,19 @@ const Menu: React.FC = () => {
       try {
         const pathname = window.location.pathname;
         const currentUrl = window.location.href;
-
+        
         console.log("=== QR CODE SCAN DEBUG ===");
         console.log("Full URL:", currentUrl);
         console.log("Pathname:", pathname);
-
+        
         // Extract table number from pathname like /table/5
         const pathMatch = pathname.match(/\/table\/(\d+)/);
-
+        
         if (pathMatch && pathMatch[1]) {
           const tableNum = parseInt(pathMatch[1]);
-          console.log(
-            "✅ SUCCESS: Extracted table number from QR code:",
-            tableNum
-          );
+          console.log("✅ SUCCESS: Extracted table number from QR code:", tableNum);
           setTableNumber(tableNum);
-
+          
           // Show success message
           console.log(`🎯 Customer scanned QR code for TABLE ${tableNum}`);
         } else {
@@ -69,7 +58,7 @@ const Menu: React.FC = () => {
           console.log("Setting default table to 1");
           setTableNumber(1);
         }
-
+        
         console.log("=== END DEBUG ===");
       } catch (error) {
         console.error("Error extracting table number:", error);
@@ -409,8 +398,7 @@ const Menu: React.FC = () => {
           </div>
 
           <p className="text-gray-600">
-            Your order has been sent to the kitchen. We'll bring it to your
-            table when ready!
+            Your order has been sent to the kitchen. We'll bring it to your table when ready!
           </p>
 
           <div className="bg-amber-50 p-3 rounded-lg">
@@ -450,18 +438,13 @@ const Menu: React.FC = () => {
             </div>
           </div>
         </div>
-
+        
         {/* QR Code Status - remove in production */}
         <div className="text-xs text-green-400 mt-2 bg-green-900/20 p-2 rounded">
           <div className="font-semibold">QR Code Status:</div>
           <div>📱 URL: {window.location.href}</div>
           <div>🍽️ Table: {tableNumber}</div>
-          <div>
-            ✅{" "}
-            {tableNumber !== 1
-              ? `Scanned from Table ${tableNumber}`
-              : "Using default table"}
-          </div>
+          <div>✅ {tableNumber !== 1 ? `Scanned from Table ${tableNumber}` : 'Using default table'}</div>
         </div>
       </div>
 
