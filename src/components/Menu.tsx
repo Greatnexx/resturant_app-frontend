@@ -34,7 +34,7 @@ type ViewType = "menu" | "cart" | "success";
 const Menu: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentView, setCurrentView] = useState<ViewType>("menu");
-  const [ setOrderPlaced] = useState<boolean>(false);
+  const [_orderPlaced, setOrderPlaced] = useState<boolean>(false);
   const [orderNumber] = useState<number>(Math.floor(Math.random() * 1000) + 1);
   const [restaurantName] = useState<string>("Bella Vista");
   const [tableNumber, setTableNumber] = useState<number | null>(null);
